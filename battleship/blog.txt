@@ -1,0 +1,18 @@
+blog:
+
+	General sentiment:
+		lots of jumping back and forth between functions
+
+		
+
+	Frustration:
+		24/2/2017 getting the damn nested for loops to allow me to check two lists:
+			fleet coordinates and prospective coordinates
+
+		5/3/2017 after being able to generate a fleet of battleships, had to code uniqueness. Wrote code to fix this, and to check, I marked coordinates on the board a ship was located with the letter 's', but then I noticed configurations that suggested overlapping. After half an hour of checking to see what's wrong with direction_checker function when in fact nothing wrong, I realized that I had never checked initial point (just took for granted)
+
+		11/3/2017 When implementing GUI I realized the importance of being "generous with data structures" and making code modular. After reading through "Hide and Seak.py" I realized that my code did not have the appropriate data structures to support a GUI
+
+
+	Ideas:
+		24/2/2017 WindWaker Salvatore's Sinking Ships sound effect
