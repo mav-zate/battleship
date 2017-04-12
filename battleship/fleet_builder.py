@@ -234,11 +234,4 @@ def fleet_builder(player_board):
     player_fleet["carrier"] = Carrier()
     for ship in player_fleet:
         ship_builder(player_board, player_fleet[ship], player_fleet)
-        """ debugging"""
-        coordinate_list = player_fleet[ship].get_coordinate_list()
-        for coordinate in coordinate_list:
-            print str(coordinate) + ":" + str(coordinate_list[coordinate])
-
-    
-
     return player_fleet
