@@ -2,27 +2,6 @@ import random, sys, Queue, pygame, math, time
 import battleship_GUI, player_turn, fleet_builder, board
 from pygame.locals import *
 
-
-'''
-TO-DO:
-    ---1. Add event handling so that you can add screen between 
-        player turns
-    ---2. add mini enemy version of player boards 
-    ---3. Add explosions instead of deleting ship parts
-    4. Add sound   
-    5. add text so players understand how to play
-'''
-
-'''
-NOTES:
-    1. Player should be notified of sinking of enemy ship
-    2. Game does not end when any fleet is sunk
-    3. Exception handling: more than one letter input
-    4. Add ending screen to congratulate playerx on win
-'''
-
-
-
 ###########################################################
 #
 # created mav_zate
@@ -140,7 +119,7 @@ def fleet_destroyed(player_fleet, player_board):
         fleet_length += fleet[ship].length
     sd = 0 # ship parts destroyed
     for ship in fleet:
-        cl = fleet[ship].get_coordinate_list() # ship's coordinate list
+        cl = fleet[ship].get_coordinate_list()
         for ship_part in cl:
             if player_board[cl[ship_part]].hit:
                 sd += 1
@@ -150,10 +129,14 @@ def fleet_destroyed(player_fleet, player_board):
         return False
 
 
-
-
-
-
+def ship_destroyed(ship, player_board):
+    hp = 0 # no. of hit ship parts
+    cl = ship.get_coordinate_list() 
+    for ship_part in cl:
+        if player_board[cl[ship_part]].hit:
+            hp += 1
+    if hp == ship.length:
+        print "You sunk the enemy %s!" % (ship.name) 
 
 
 
@@ -172,34 +155,55 @@ def main(player1, player2):
     graphics.correct_fleet_images(player2_fleet)
 
     previous_moves = Queue.Queue(1)
+    
+    pregame = True
+    while pregame:
+        graphics.render_main_menu()
+        event = pygame.event.wait()
+        if event.type == KEYDOWN and event.key == K_RETURN:
+            pregame = False
+        elif event.type == QUIT:
+            exit()  
+        else:
+            pass  
+
     game_over = False
     turn = 1
     while game_over == False:
+
+        ##############################################
+        #                                            #
+        #                 Start Screen               #
+        #                                            #
+        ##############################################
+
+            
+
         ##############################################
         #                                            #
         #  Player 1 turn then check if Player 2 lost #
         #                                            #
         ##############################################
 
-        if turn == 1:
-            pygame.display.flip()             
+        if turn == 1:             
             graphics.render_start_image1()
-            for event in pygame.event.get():
-                if event.type == QUIT:
-                    game_over = True    
-                elif event.type == KEYDOWN and event.key == K_n:
-                    # render Player 1 board 
-                    graphics.render_board1()
-                    graphics.render_board_label()
-                    graphics.render_fleet1()
-                    pygame.display.flip()
-                    # player 1 events
-                    player_turn(player1, graphics.player1_enemyBoard, graphics.player2_fleet,
-                     graphics.player2_board, previous_moves, graphics)
-                    player2_loss = fleet_destroyed(graphics.player2_fleet, graphics.player2_board)
-                    if player2_loss:
-                        print player2.name + "\'s fleet is destroyed! " + player1.name + " has won!"
-                        game_over == True
+            event = pygame.event.wait()
+            if event.type == QUIT:
+                exit()    
+            elif event.type == KEYDOWN and event.key == K_RETURN:
+                ''' add event handler to quit during game screen'''
+                # render Player 1 board 
+                graphics.render_board1()
+                graphics.render_board_label()
+                graphics.render_fleet1()
+                pygame.display.flip()
+                # player 1 events
+                player_turn(player1, graphics.player1_enemyBoard, graphics.player2_fleet,
+                 graphics.player2_board, previous_moves, graphics)
+                player2_loss = fleet_destroyed(graphics.player2_fleet, graphics.player2_board)
+                if player2_loss:
+                    turn = 3
+                else:
                     turn = 2
 
         ##############################################
@@ -211,40 +215,115 @@ def main(player1, player2):
         elif turn == 2:
             pygame.display.flip()
             graphics.render_start_image2()
-            for event in pygame.event.get():
-                if event.type == QUIT:
-                    game_over = True  
-                elif event.type == KEYDOWN and event.key == K_m:
-                    # render Player 2 board
-                    pygame.display.flip()
-                    graphics.render_board2()
-                    graphics.render_board_label()
-                    graphics.render_fleet2()
-                    pygame.display.flip()
-                    # player 2 events
-                    player_turn(player2, graphics.player2_enemyBoard, graphics.player1_fleet,
-                        graphics.player1_board, previous_moves, graphics)
-                    player1_loss = fleet_destroyed(graphics.player1_fleet, graphics.player1_board)
-                    if player1_loss:
-                        print player1.name + "\'s fleet is destroyed! " + player2.name + " has won!"
-                        game_over == True
+            event = pygame.event.wait()
+            if event.type == QUIT:
+                exit()  
+            elif event.type == KEYDOWN and event.key == K_RETURN:
+                ''' add event handler to quit during game screen'''
+                # render Player 2 board
+                pygame.display.flip()
+                graphics.render_board2()
+                graphics.render_board_label()
+                graphics.render_fleet2()
+                pygame.display.flip()
+                # player 2 events
+                player_turn(player2, graphics.player2_enemyBoard, graphics.player1_fleet,
+                    graphics.player1_board, previous_moves, graphics)
+                player1_loss = fleet_destroyed(graphics.player1_fleet, graphics.player1_board)
+                if player1_loss:
+                    turn = 4
+                else:    
                     turn = 1
 
+        elif turn == 3:
+            print player2.name + "\'s fleet is destroyed! " + player1.name + " has won!"
+            graphics.render_victory_player_one()
+            event = pygame.event.wait()
+            if event.type == QUIT:
+                exit()  
 
-        
+        elif turn == 4:
+            print player1.name + "\'s fleet is destroyed! " + player2.name + " has won!"
+            graphics.render_victory_player_two()
+            event = pygame.event.wait()
+            if event.type == QUIT:
+                exit()  
 
+
+        # refresh screen in between player2 and player1 turns                
         pygame.display.flip()
 
 
-    pygame.quit()
+
+
+
+    exit()
+
+
+
+
+# should take player mouse click & return int 2-tuple: (row, col)
+def player_input():
+    row = None
+    col = None
+    player_input = False
+    while player_input == False:
+        event = pygame.event.wait()
+        if event.type == QUIT:
+            exit()
+        elif event.type == MOUSEBUTTONDOWN:
+            x,y = event.pos
+            row = mouse_reader(y, 1)
+            col = mouse_reader(x, 0)
+            player_input = True
+    print "Row: %s and Col: %s" % (row, col) 
+    return row, col
+
+
+# x_minMax, y_minMax, & start_list values hard coded!
+# for rows, should be y-value of bottom side of grid square
+# for columns, should be x-value of right side of grid square
+def mouse_reader(n, i):
+    # validate input 
+    if i != 0 and i != 1:
+        print "mouse_reader() not working"
+        exit()
+
+    # check if click is in board
+    x_minMax = [650, 1150]
+    y_minMax = [50, 550]
+    if i == 0:
+        if n < x_minMax[0] or n > x_minMax[1]:
+            return 0
+    else:
+        if n < y_minMax[0] or n > y_minMax[1]:
+            return 0
+
+    # create x & y values
+    start_list = [700, 100]
+    x_list = [start_list[0], 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    y_list = [start_list[1], 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    for j in range(1, 10):
+        x_list[j] = x_list[j-1] + 50
+        y_list[j] = y_list[j-1] + 50
+
+    # check pixel value against row/col max
+    count = 1
+    start = 0 
+    if i == 0:
+        for j in range(10):
+            if n > x_list[j]:
+                count += 1
+    else:
+        for j in range(10):
+            if n > y_list[j]:
+                count += 1
+    return count
+
 
 
 
 def player_turn(player, player_enemyBoard, enemy_fleet, enemy_board, previous_moves, gui):
-    ###########################################################
-    # for debugging
-    print enemy_fleet
-    ###########################################################
     try:
         last_player_move = previous_moves.get(True,0.1)
     except:
@@ -262,33 +341,14 @@ def player_turn(player, player_enemyBoard, enemy_fleet, enemy_board, previous_mo
     turn_over = False
     while turn_over == False: 
 
-        # Validate player coordinate input
-        invalid_row = True
-        while invalid_row:
-            guess_row = str(raw_input("Guess Row:"))
-            if not guess_row.isalpha():
-                print "What language is that? Please try entering a letter again."
-            else:
-                invalid_row = False
-
-        invalid_col = True
-        while invalid_col:
-            try:
-                guess_col = int(raw_input("Guess Col:"))
-            except ValueError:
-                print "That\'s not an integer value. Please enter a number from 1 to 10."
-            else:
-                invalid_col = False
-        guess_row = letter_to_integer[guess_row]
-
-        # check if player guess inside board
-        if (guess_row < 1 or guess_row > math.sqrt(len(enemy_board))) or \
-        (guess_col < 1 or guess_col > math.sqrt(len(enemy_board))):
-            print "Oops, that's not even in the ocean! Please try again."
-
-        # check if player guess previously guessed
-        elif enemy_board[(guess_row, guess_col)].hit:
-            print "You guessed that one already."
+        # check mouse click
+        correct_input = False
+        guess_row = 0
+        guess_col = 0
+        while correct_input == False:
+            guess_row, guess_col = player_input()
+            if guess_row != 0 and guess_col != 0:
+                correct_input = True
 
         # check if player guess is hit or miss then end turn
         else:          
@@ -304,8 +364,7 @@ def player_turn(player, player_enemyBoard, enemy_fleet, enemy_board, previous_mo
                 gui.kaboom.play()
                 time.sleep(1)
                 print "You hit the enemy %s!" % (enemy_fleet[ship].name)
-                if len(coordinate_list) == 0:
-                    print "You sunk the enemy %s!" % (enemy_fleet[ship].name)
+                ship_destroyed(enemy_fleet[ship], enemy_board)
                 previous_moves.put({enemy_fleet[ship].name : (guess_row, guess_col)})
                 turn_over = True
             else:
@@ -318,13 +377,3 @@ def player_turn(player, player_enemyBoard, enemy_fleet, enemy_board, previous_mo
 
 
 main(player1, player2)
-
-
-
-
-
-
-
-        
-
-
