@@ -94,17 +94,13 @@ class Player:
         self.fleet = fleet
         self.board = board
 
-
-
-
-
 player1_board, player1_enemyBoard, player2_board, player2_enemyBoard = board.board_maker(10, 50)
 
 player1_fleet = fleet_builder.fleet_builder(player1_board)
 player2_fleet = fleet_builder.fleet_builder(player2_board)
 
-player1 = Player("Maverick", player1_fleet, player1_board)
-player2 = Player("Araz", player2_fleet, player2_board)
+player1 = Player("Player One", player1_fleet, player1_board)
+player2 = Player("Player Two", player2_fleet, player2_board)
 
 ###########################################################
 
