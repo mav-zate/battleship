@@ -1,8 +1,6 @@
 import random, sys, Queue
 import battleship_GUI
 
-
-
 class Square():
     def __init__(self, coordinate):
         self.coordinate = coordinate
@@ -44,7 +42,7 @@ def board_maker(board_length, img_length):
     # set rect.topleft x and y coordinates for Square obj's
     x = img_length
     y = img_length
-    x2start = 2 * img_length + board_length * img_length
+    x2start = 3 * img_length + board_length * img_length
     x2 = x2start
     y2 = img_length
     for row in range(1, board_length + 1):
@@ -61,12 +59,3 @@ def board_maker(board_length, img_length):
             x += img_length
             x2 += img_length
     return player1_board, player1_enemyBoard, player2_board, player2_enemyBoard
-
-
-# Generates user friendly display for debugging
-def print_board(board):
-    for row in board:
-        print " ".join(row)
-
-
-
