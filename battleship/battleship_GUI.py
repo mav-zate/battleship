@@ -45,8 +45,8 @@ class GUI():
 
 		self.square_length = player1_board[(1,1)].img_length
 		self.board_length = self.square_length * 10 
-		self.screen_height = player1_board[(1,1)].img_length * 11 # 2100p
-		self.screen_width = self.screen_height * 2 # 825p
+		self.screen_height = player1_board[(1,1)].img_length * 14 # 700px
+		self.screen_width = player1_board[(1,1)].img_length * 23 # 1150px
 		
 
 		# initializes display
@@ -56,8 +56,11 @@ class GUI():
 		pygame.display.set_caption("Battleship")
 		self.background.fill((120,120,120))
 
-		self.start_pic1 = load_image(data_dir, "start_pic_1.png", None)
-		self.start_pic2 = load_image(data_dir, "start_pic_2.png", None)
+		self.main_menu_pic = load_image(data_dir, "main_menu.png", None)
+		self.start_pic1 = load_image(data_dir, "start_player_one.png", None)
+		self.start_pic2 = load_image(data_dir, "start_player_two.png", None)
+		self.victory_player_one = load_image(data_dir, "victory_player_one.png", None)
+		self.victory_player_two = load_image(data_dir, "victory_player_two.png", None) 
 
 		self.player1_board = player1_board
 		self.player1_enemyBoard = player1_enemyBoard
@@ -79,6 +82,11 @@ class GUI():
 		self.player1_fleet = player1_fleet
 		self.player2_fleet = player2_fleet
 
+	def render_main_menu(self):
+		self.screen.blit(self.background, (0,0))
+		self.screen.blit(self.main_menu_pic, (0,0))
+		pygame.display.flip()
+
 
 	def render_start_image1(self):
 		self.screen.blit(self.background, (0,0))
@@ -89,6 +97,16 @@ class GUI():
 		self.screen.blit(self.background, (0,0))
 		self.screen.blit(self.start_pic2, (0,0))
 		pygame.display.flip()
+
+	def render_victory_player_one(self):
+		self.screen.blit(self.background, (0,0))
+		self.screen.blit(self.victory_player_one, (0,0))
+		pygame.display.flip()
+		
+	def render_victory_player_two(self):
+		self.screen.blit(self.background, (0,0))
+		self.screen.blit(self.victory_player_two, (0,0))
+		pygame.display.flip()	
 
 
 
@@ -162,7 +180,7 @@ class GUI():
 		count = 1 
 		x = self.square_length
 		y = 0
-		origin2 = self.square_length + self.board_length
+		origin2 = 2 * self.square_length + self.board_length 
 		x2 = origin2 + self.square_length
 		while count < 11:
 			# render first board label
@@ -224,10 +242,3 @@ class GUI():
 			elif self.player2_enemyBoard[square].hit:
 				self.screen.blit(self.explosion, \
 				 (self.player2_enemyBoard[square].xlocation, self.player2_enemyBoard[square].ylocation))
-
-
-
-	# def render_ships(self):
-	
-		
-
